@@ -1,3 +1,11 @@
+// Simplified Pokemon interface for UI components
+export interface SimplePokemon {
+  name: string
+  sprite: string
+  id: number
+}
+
+// Full Pokemon interface from PokeAPI
 export interface Pokemon {
   abilities: Ability[];
   base_experience: number;
