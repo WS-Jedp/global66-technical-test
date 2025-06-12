@@ -1,125 +1,115 @@
 <script setup>
-import { ref, computed } from 'vue'
-import TextInput from '../forms/inputs/TextInput.vue'
-import { usePokemonWithFavorites } from '../composables/usePokemon'
-import { useFavoritesStore } from '../store/favorites'
+import { ref, computed } from "vue";
+import TextInput from "../forms/inputs/TextInput.vue";
+import ScreenLoader from "../containers/loaders/ScreenLoader.vue";
+import PokemonListContainer from "../containers/pokemonsList/PokemonListContainer.vue";
+import { usePokemonWithFavorites } from "../composables/usePokemon";
+import { usePokemonPagination } from "../composables/usePokemonPagination";
+import { useInitialPokemon } from "../composables/useInitialPokemon";
+import { useFavoritesStore } from "../store/favorites";
+import PrimaryButton from "../components/buttons/PrimaryButton.vue";
+import SecondaryButton from "../components/buttons/SecondaryButton.vue";
+import TabNavigation from "../components/navigation/TabNavigation.vue";
 
 // Reactive state
-const searchQuery = ref('')
-const activeTab = ref('all')
+const searchQuery = ref("");
+const activeTab = ref("all");
 
 // Store
-const favoritesStore = useFavoritesStore()
+const favoritesStore = useFavoritesStore();
 
-// Pokemon data with Vue Query
+// Initial Pokemon loading for the first batch
+const { isInitialLoading, initialLoadError } = useInitialPokemon();
+
+// Pagination for all Pokemon (when no search)
 const {
-  displayedPokemon,
-  isLoading,
-  error,
-  hasSearched,
-  showNoResults
-} = usePokemonWithFavorites(
-  searchQuery,
-  activeTab,
-  computed(() => favoritesStore.favorites)
-)
+  allPokemon: paginatedPokemon,
+  loadMore,
+  hasNextPage,
+  isFetchingNextPage,
+  isLoading: isPaginationLoading,
+  error: paginationError,
+} = usePokemonPagination(10);
+
+// Pokemon data with search integration
+const { displayedPokemon, isLoading, error, hasSearched, showNoResults } =
+  usePokemonWithFavorites(
+    searchQuery,
+    activeTab,
+    computed(() => favoritesStore.favorites),
+    paginatedPokemon
+  );
+
+// Determine if we should use virtual scrolling (when no search and showing all)
+const useVirtualScrolling = computed(() => {
+  return !hasSearched.value && activeTab.value === "all";
+});
 
 // Favorite management
 const toggleFavorite = (pokemon) => {
-  favoritesStore.toggle(pokemon)
-}
+  favoritesStore.toggle(pokemon);
+};
 
 const isFavorite = (name) => {
-  return favoritesStore.isFavorite(name)
-}
+  return favoritesStore.isFavorite(name);
+};
+
+const handleLoadMore = () => {
+  if (!hasSearched.value && activeTab.value === "all") {
+    loadMore();
+  }
+};
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto p-4 min-h-screen flex flex-col bg-poke-light-gray-100">
-    <!-- Search Input -->
-    <TextInput
-    v-model="searchQuery"
-    placeholder="Search Pokemon..."
-    />
+  <!-- Screen Loader for initial load -->
+  <ScreenLoader v-if="isInitialLoading" />
 
-    <!-- Pokemon List -->
-    <div class="flex-1 mb-5">
-      <!-- Loading State -->
-      <div v-if="isLoading" class="text-center py-10 text-lg text-gray-500">
-        Searching...
-      </div>
-      
-      <!-- Error State -->
-      <div v-else-if="error" class="text-center py-10 text-red-500">
-        <p>Error occurred while searching. Please try again.</p>
-      </div>
-      
-      <!-- No Results State -->
-      <div v-else-if="showNoResults" class="text-center py-10 text-gray-500">
-        <p v-if="activeTab === 'favorites' && !hasSearched">
-          No favorite Pokemon yet. Search for Pokemon and add them to your favorites!
-        </p>
-        <p v-else>
-          No Pokemon found. Please try a different search term.
-        </p>
-      </div>
-      
-      <!-- Pokemon Grid -->
-      <div 
-        v-else-if="displayedPokemon.length > 0" 
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-      >
-        <div
-          v-for="pokemon in displayedPokemon"
-          :key="pokemon.name"
-          class="bg-white border border-gray-300 rounded-xl p-4 text-center shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md relative"
-        >
-          <img 
-            :src="pokemon.sprite" 
-            :alt="pokemon.name" 
-            class="w-24 h-24 object-contain mx-auto"
-            loading="lazy"
-          />
-          <h3 class="mt-2 mb-0 capitalize text-gray-700">{{ pokemon.name }}</h3>
-          <button
-            @click="toggleFavorite(pokemon)"
-            :class="[
-              'absolute top-2 right-2 bg-transparent border-none text-xl cursor-pointer p-1 rounded-full',
-              'transition-transform duration-200 hover:scale-110'
-            ]"
-            :aria-label="isFavorite(pokemon.name) ? 'Remove from favorites' : 'Add to favorites'"
-          >
-            {{ isFavorite(pokemon.name) ? '❤️' : '🤍' }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Navigation Tabs -->
-    <div class="flex bg-gray-100 rounded-lg p-1 gap-1">
+  <!-- Initial Load Error -->
+  <div
+    v-else-if="initialLoadError"
+    class="max-w-4xl mx-auto p-4 min-h-screen flex flex-col justify-center items-center bg-poke-light-gray-100"
+  >
+    <div class="text-center py-10 text-red-500">
+      <p>Failed to load Pokemon data. Please refresh the page.</p>
       <button
-        @click="activeTab = 'all'"
-        :class="[
-          'flex-1 py-3 px-4 border-none rounded-md font-medium cursor-pointer transition-all duration-200',
-          activeTab === 'all' 
-            ? 'bg-white text-indigo-600 shadow-sm' 
-            : 'bg-transparent text-gray-500 hover:text-gray-700'
-        ]"
+        @click="window.location.reload()"
+        class="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
       >
-        All
-      </button>
-      <button
-        @click="activeTab = 'favorites'"
-        :class="[
-          'flex-1 py-3 px-4 border-none rounded-md font-medium cursor-pointer transition-all duration-200',
-          activeTab === 'favorites' 
-            ? 'bg-white text-indigo-600 shadow-sm' 
-            : 'bg-transparent text-gray-500 hover:text-gray-700'
-        ]"
-      >
-        Favorites ({{ favoritesStore.favoriteCount }})
+        Refresh Page
       </button>
     </div>
   </div>
-</template>
 
+  <!-- Main Content -->
+  <div
+    v-else
+    class="max-w-4xl mx-auto p-4 h-screen flex flex-col bg-poke-light-gray-100"
+  >
+    <!-- Search Input -->
+    <div class="flex-shrink-0 mb-4">
+      <TextInput v-model="searchQuery" placeholder="Search Pokemon..." />
+    </div>
+
+    <!-- Pokemon List - Takes remaining height -->
+    <div class="flex-1 mb-4 min-h-0">
+      <PokemonListContainer
+        :displayed-pokemon="displayedPokemon"
+        :is-loading="isLoading || isPaginationLoading"
+        :error="error || paginationError"
+        :show-no-results="showNoResults"
+        :active-tab="activeTab"
+        :has-searched="hasSearched"
+        :use-virtual-scrolling="useVirtualScrolling"
+        :has-next-page="hasNextPage"
+        :is-fetching-next-page="isFetchingNextPage"
+        @toggle-favorite="toggleFavorite"
+        @is-favorite="isFavorite"
+        @load-more="handleLoadMore"
+      />
+    </div>
+
+    <!-- Navigation Tabs -->
+    <TabNavigation />
+  </div>
+</template>

@@ -44,27 +44,42 @@ export function usePokemonSearch(searchQuery: any) {
 }
 
 /**
- * Hook for managing Pokemon search with favorites integration
+ * Hook for managing Pokemon search with favorites integration and pagination
  */
-export function usePokemonWithFavorites(searchQuery: any, activeTab: any, favorites: any) {
+export function usePokemonWithFavorites(searchQuery: any, activeTab: any, favorites: any, paginatedPokemon: any) {
   const { 
     data: searchResults, 
-    isLoading, 
-    error, 
+    isLoading: isSearchLoading, 
+    error: searchError, 
     hasSearched 
   } = usePokemonSearch(searchQuery)
 
   const displayedPokemon = computed(() => {
-    if (activeTab.value === 'favorites') {
-      if (!hasSearched.value) {
-        return favorites.value
+    // When there's a search query, use search results
+    if (hasSearched.value) {
+      if (activeTab.value === 'favorites') {
+        // Show only favorites from search results
+        return (searchResults.value || []).filter((pokemon: any) => 
+          favorites.value.some((fav: any) => fav.name === pokemon.name)
+        )
       }
-      // Show only favorites from search results
-      return (searchResults.value || []).filter((pokemon: any) => 
-        favorites.value.some((fav: any) => fav.name === pokemon.name)
-      )
+      return searchResults.value || []
     }
-    return searchResults.value || []
+
+    // When no search query, use paginated results or favorites
+    if (activeTab.value === 'favorites') {
+      return favorites.value
+    }
+    
+    return paginatedPokemon.value || []
+  })
+
+  const isLoading = computed(() => {
+    return hasSearched.value ? isSearchLoading.value : false
+  })
+
+  const error = computed(() => {
+    return hasSearched.value ? searchError.value : null
   })
 
   const showNoResults = computed(() => {

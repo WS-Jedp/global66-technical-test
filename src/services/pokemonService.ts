@@ -123,6 +123,101 @@ export class PokemonService {
     // If no exact match, try partial match
     return this.searchPokemonByPartialName(query, limit)
   }
+
+  /**
+   * Get Pokemon with pagination support for virtual scrolling
+   */
+  async getPokemonPaginated(page: number = 1, limit: number = 10): Promise<{
+    pokemon: SimplePokemon[]
+    hasMore: boolean
+    total: number
+  }> {
+    try {
+      const offset = (page - 1) * limit
+      const response = await fetch(`${this.baseUrl}/pokemon?limit=${limit}&offset=${offset}`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch Pokemon list')
+      }
+
+      const data: PokemonListResponse = await response.json()
+
+      // Fetch detailed data for each Pokemon
+      const pokemonDetails = await Promise.all(
+        data.results.map(async (pokemon) => {
+          const detailResponse = await fetch(pokemon.url)
+          if (!detailResponse.ok) {
+            console.warn(`Failed to fetch details for ${pokemon.name}`)
+            return null
+          }
+          const detail: Pokemon = await detailResponse.json()
+          return this.transformPokemonData(detail)
+        })
+      )
+
+      const validPokemon = pokemonDetails.filter(pokemon => pokemon !== null) as SimplePokemon[]
+
+      return {
+        pokemon: validPokemon,
+        hasMore: data.next !== null,
+        total: data.count
+      }
+    } catch (error) {
+      console.error('Error fetching paginated Pokemon:', error)
+      return {
+        pokemon: [],
+        hasMore: false,
+        total: 0
+      }
+    }
+  }
+
+  /**
+   * Get all Pokemon with pagination support (updated for initial load)
+   */
+  async getAllPokemon(limit: number = 20, offset: number = 0): Promise<{
+    pokemon: SimplePokemon[]
+    hasMore: boolean
+    total: number
+  }> {
+    try {
+      const response = await fetch(`${this.baseUrl}/pokemon?limit=${limit}&offset=${offset}`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch Pokemon list')
+      }
+
+      const data: PokemonListResponse = await response.json()
+
+      // Fetch detailed data for each Pokemon
+      const pokemonDetails = await Promise.all(
+        data.results.map(async (pokemon) => {
+          const detailResponse = await fetch(pokemon.url)
+          if (!detailResponse.ok) {
+            console.warn(`Failed to fetch details for ${pokemon.name}`)
+            return null
+          }
+          const detail: Pokemon = await detailResponse.json()
+          return this.transformPokemonData(detail)
+        })
+      )
+
+      const validPokemon = pokemonDetails.filter(pokemon => pokemon !== null) as SimplePokemon[]
+
+      return {
+        pokemon: validPokemon,
+        hasMore: data.next !== null,
+        total: data.count
+      }
+    } catch (error) {
+      console.error('Error fetching all Pokemon:', error)
+      return {
+        pokemon: [],
+        hasMore: false,
+        total: 0
+      }
+    }
+  }
 }
 
 // Export singleton instance
