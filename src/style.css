@@ -15,3 +15,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+
+@theme {
+  --color-poke-gray: #BFBFBF;
+  --color-poke-red: #F22539;
+}
+
+
