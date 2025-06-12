@@ -1,39 +1,39 @@
 import { defineStore } from 'pinia'
-import type { SimplePokemon } from '../types/pokemon'
 
 export const useFavoritesStore = defineStore('favorites', {
   state: () => ({
-    favorites: [] as SimplePokemon[],
+    favoriteIds: [] as string[], // Store only IDs/names
   }),
   getters: {
     isFavorite: (state) => (name: string) => {
-      return state.favorites.some(p => p.name === name)
+      return state.favoriteIds.includes(name)
     },
-    favoriteCount: (state) => state.favorites.length
+    favoriteCount: (state) => state.favoriteIds.length,
+    favoriteNames: (state) => state.favoriteIds
   },
   actions: {
-    toggle(pokemon: SimplePokemon) {
-      const index = this.favorites.findIndex(p => p.name === pokemon.name)
+    toggle(pokemonName: string) {
+      const index = this.favoriteIds.findIndex(name => name === pokemonName)
       if (index > -1) {
-        this.favorites.splice(index, 1)
+        this.favoriteIds.splice(index, 1)
       } else {
-        this.favorites.push(pokemon)
+        this.favoriteIds.push(pokemonName)
       }
     },
-    add(pokemon: SimplePokemon) {
-      if (!this.isFavorite(pokemon.name)) {
-        this.favorites.push(pokemon)
+    add(pokemonName: string) {
+      if (!this.isFavorite(pokemonName)) {
+        this.favoriteIds.push(pokemonName)
       }
     },
     remove(name: string) {
-      this.favorites = this.favorites.filter(p => p.name !== name)
+      this.favoriteIds = this.favoriteIds.filter(id => id !== name)
     },
     clear() {
-      this.favorites = []
+      this.favoriteIds = []
     }
   },
   persist: {
-    key: 'pokemon-favorites',
+    key: 'pokemon-favorite-ids',
     storage: localStorage
   }
 })

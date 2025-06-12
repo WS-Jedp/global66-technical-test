@@ -99,6 +99,34 @@ export class PokemonService {
   }
 
   /**
+   * Get multiple Pokemon by their names
+   */
+  async getFavoritePokemon(pokemonNames: string[]): Promise<SimplePokemon[]> {
+    if (pokemonNames.length === 0) {
+      return []
+    }
+
+    try {
+      const pokemonDetails = await Promise.all(
+        pokemonNames.map(async (name) => {
+          const response = await fetch(`${this.baseUrl}/pokemon/${name.toLowerCase()}`)
+          if (!response.ok) {
+            console.warn(`Failed to fetch details for ${name}`)
+            return null
+          }
+          const detail: Pokemon = await response.json()
+          return this.transformPokemonData(detail)
+        })
+      )
+
+      return pokemonDetails.filter(pokemon => pokemon !== null) as SimplePokemon[]
+    } catch (error) {
+      console.error('Error fetching favorite Pokemon:', error)
+      return []
+    }
+  }
+
+  /**
    * Transform Pokemon API data to simplified format
    */
   private transformPokemonData(pokemon: Pokemon): SimplePokemon {

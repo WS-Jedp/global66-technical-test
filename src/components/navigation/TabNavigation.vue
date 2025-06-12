@@ -1,25 +1,29 @@
 <script setup>
 import { useRouter } from "vue-router";
+import { computed } from 'vue'
 import PrimaryButton from "../buttons/PrimaryButton.vue";
-import SecondaryButton from "../buttons/SecondaryButton.vue";
 const router = useRouter();
 
 const navigateToHome = () => {
-  router.push({ name: "home" });
+  router.push({ name: "Home" });
 };
 
 const navigateToFavorites = () => {
-  router.push({ name: "favorites" });
+  router.push({ name: "Favorites" });
 };
+
+const isOnFavorites = computed(() => {
+  return router.currentRoute.value.name === "Favorites";
+});
 
 const emit = defineEmits(["navigate-home", "navigate-favorites"]);
 </script>
 <template>
   <!-- Navigation Tabs -->
   <div
-    class="fixed bottom-0 left-0 w-full flex items-center justify-center bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] px-5 py-3 space-x-2"
+    class=" w-full flex items-center justify-center bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] px-5 py-3 space-x-2"
   >
-    <PrimaryButton @click="navigateToHome">
+    <PrimaryButton @click="navigateToHome" :variant="isOnFavorites ? 'secondary' : 'primary'">
       <template #icon>
         <img
           src="/assets/icons/pokemon-menu-icon.svg"
@@ -29,7 +33,7 @@ const emit = defineEmits(["navigate-home", "navigate-favorites"]);
       </template>
       <template #text>All</template>
     </PrimaryButton>
-    <SecondaryButton @click="navigateToHome">
+    <PrimaryButton @click="navigateToFavorites" :variant="!isOnFavorites ? 'secondary' : 'primary'">
       <template #icon>
         <img
           src="/assets/icons/pokemon-star-icon.svg"
@@ -38,6 +42,6 @@ const emit = defineEmits(["navigate-home", "navigate-favorites"]);
         />
       </template>
       <template #text>Favorites</template>
-    </SecondaryButton>
+    </PrimaryButton>
   </div>
 </template>

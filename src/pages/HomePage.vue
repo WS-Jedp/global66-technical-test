@@ -3,20 +3,13 @@ import { ref, computed } from "vue";
 import TextInput from "../forms/inputs/TextInput.vue";
 import ScreenLoader from "../containers/loaders/ScreenLoader.vue";
 import PokemonListContainer from "../containers/pokemonsList/PokemonListContainer.vue";
-import { usePokemonWithFavorites } from "../composables/usePokemon";
+import { useHomePokemon } from "../composables/useHomePokemon";
 import { usePokemonPagination } from "../composables/usePokemonPagination";
 import { useInitialPokemon } from "../composables/useInitialPokemon";
-import { useFavoritesStore } from "../store/favorites";
-import PrimaryButton from "../components/buttons/PrimaryButton.vue";
-import SecondaryButton from "../components/buttons/SecondaryButton.vue";
 import TabNavigation from "../components/navigation/TabNavigation.vue";
 
 // Reactive state
 const searchQuery = ref("");
-const activeTab = ref("all");
-
-// Store
-const favoritesStore = useFavoritesStore();
 
 // Initial Pokemon loading for the first batch
 const { isInitialLoading, initialLoadError } = useInitialPokemon();
@@ -33,29 +26,11 @@ const {
 
 // Pokemon data with search integration
 const { displayedPokemon, isLoading, error, hasSearched, showNoResults } =
-  usePokemonWithFavorites(
-    searchQuery,
-    activeTab,
-    computed(() => favoritesStore.favorites),
-    paginatedPokemon
-  );
+  useHomePokemon(searchQuery, paginatedPokemon);
 
-// Determine if we should use virtual scrolling (when no search and showing all)
-const useVirtualScrolling = computed(() => {
-  return !hasSearched.value && activeTab.value === "all";
-});
-
-// Favorite management
-const toggleFavorite = (pokemon) => {
-  favoritesStore.toggle(pokemon);
-};
-
-const isFavorite = (name) => {
-  return favoritesStore.isFavorite(name);
-};
-
+// Load more handler
 const handleLoadMore = () => {
-  if (!hasSearched.value && activeTab.value === "all") {
+  if (!hasSearched.value) {
     loadMore();
   }
 };
@@ -82,34 +57,30 @@ const handleLoadMore = () => {
   </div>
 
   <!-- Main Content -->
-  <div
+  <section
     v-else
-    class="max-w-4xl mx-auto p-4 h-screen flex flex-col bg-poke-light-gray-100"
+    class="mx-auto h-screen flex flex-col"
   >
     <!-- Search Input -->
-    <div class="flex-shrink-0 mb-4">
+    <div class="w-full max-w-4xl mx-auto flex-shrink-0 p-4">
       <TextInput v-model="searchQuery" placeholder="Search Pokemon..." />
     </div>
 
     <!-- Pokemon List - Takes remaining height -->
-    <div class="flex-1 mb-4 min-h-0">
+    <div class="w-full max-w-4xl mx-auto flex-1 mb-4 min-h-0 px-3">
       <PokemonListContainer
         :displayed-pokemon="displayedPokemon"
         :is-loading="isLoading || isPaginationLoading"
         :error="error || paginationError"
         :show-no-results="showNoResults"
-        :active-tab="activeTab"
         :has-searched="hasSearched"
-        :use-virtual-scrolling="useVirtualScrolling"
         :has-next-page="hasNextPage"
         :is-fetching-next-page="isFetchingNextPage"
-        @toggle-favorite="toggleFavorite"
-        @is-favorite="isFavorite"
         @load-more="handleLoadMore"
       />
     </div>
 
     <!-- Navigation Tabs -->
-    <TabNavigation />
-  </div>
+    <TabNavigation v-if="!showNoResults" />
+  </section>
 </template>
