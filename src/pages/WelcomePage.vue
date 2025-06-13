@@ -20,7 +20,7 @@ const navigateToHome = () => {
         <img
           src="/assets/images/pokemon-welcome.png"
           alt="Pokemon Welcome"
-          class="relative z-10"
+          class="relative z-10 ml-[21px] mb-[1.5px]"
         />
       </figure>
       <h1 class="text-2xl font-bold mb-4">Welcome to the Pokédex</h1>

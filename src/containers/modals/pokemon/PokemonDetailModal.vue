@@ -77,7 +77,7 @@ const toggleFavorite = () => {
       <div
         class="relative bg-gradient-to-br from-blue-400 to-purple-500 h-48 flex items-center justify-center"
         style="
-          background-image: url('/assets/images/pokemon-bg-image.png');
+          background-image: url('/global66-technical-test/assets/images/pokemon-bg-image.png');
           background-repeat: no-repeat;
           background-size: cover;
         "
@@ -143,12 +143,12 @@ const toggleFavorite = () => {
           <PrimaryButton @click="shareWithFriends" variant="primary">
             <template #text> Share To My Friends </template>
           </PrimaryButton>
-          <button @click="toggleFavorite">
+          <button @click="toggleFavorite" class="cursor-pointer">
             <img
               :src="
                 isFavorite
-                  ? '/assets/icons/pokemon-fav-active.svg'
-                  : '/assets/icons/pokemon-fav-disabled.svg'
+                  ? '/global66-technical-test/assets/icons/pokemon-fav-active.svg'
+                  : '/global66-technical-test/assets/icons/pokemon-fav-disabled.svg'
               "
               alt="Favorite Icon"
               class="w-12"

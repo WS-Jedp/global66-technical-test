@@ -20,7 +20,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory('/global66-technical-test/'),
   routes,
   scrollBehavior() {
     return { top: 0 }

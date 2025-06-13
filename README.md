@@ -2,6 +2,12 @@
 
 This project is a technical challenge developed for Global66. The app is a scalable, modular Pokédex built with Vue 3 and modern best practices, focusing on performance, architectural clarity, and maintainability.
 
+## 🔗 Demo en vivo
+
+Puedes ver la aplicación desplegada en GitHub Pages aquí:
+
+👉 [https://ws-jedp.github.io/global66-technical-test/](https://ws-jedp.github.io/global66-technical-test/)
+
 ## 🚀 Stack & Key Technologies
 
 | Tool/Librería               | Por qué la elegí                                                                   |
