@@ -32,6 +32,8 @@ const { displayedPokemon, isLoading, error, hasSearched, showNoResults } =
         :has-searched="hasSearched"
         :has-next-page="false"
         :is-fetching-next-page="false"
+        @reset-search="searchQuery = ''"
+        :is-favorites-page="true"
       />
     </div>
 

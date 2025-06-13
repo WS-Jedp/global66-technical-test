@@ -4,6 +4,8 @@ import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 import { ref } from "vue";
 import PokemonSimpleCard from "../../components/pokemons/PokemonSimpleCard.vue";
 import PokemonDetailModal from "../modals/pokemon/PokemonDetailModal.vue";
+import PrimaryButton from "../../components/buttons/PrimaryButton.vue";
+import SearchLoader from "../loaders/SearchLoader.vue";
 
 defineProps({
   displayedPokemon: {
@@ -31,6 +33,10 @@ defineProps({
     default: false,
   },
   isFetchingNextPage: {
+    type: Boolean,
+    default: false,
+  },
+  isFavoritesPage: {
     type: Boolean,
     default: false,
   },
@@ -64,22 +70,15 @@ const closeModal = () => {
   selectedPokemon.value = null;
 };
 
-const handleAddToFavorites = (pokemon) => {
-  // Handle add to favorites logic here
-  console.log('Add to favorites:', pokemon);
-};
-
-const handleShare = (pokemon) => {
-  // Handle share logic here
-  console.log('Share pokemon:', pokemon);
+const handleSearchAgain = () => {
+  // Reset search state
+  emit("reset-search");
 };
 </script>
 
 <template>
   <!-- Loading State -->
-  <div v-if="isLoading" class="text-center py-10 text-lg text-gray-500">
-    Searching...
-  </div>
+  <SearchLoader v-if="isLoading" />
 
   <!-- Error State -->
   <div v-else-if="error" class="text-center py-10 text-red-500">
@@ -88,15 +87,30 @@ const handleShare = (pokemon) => {
 
   <!-- No Results State -->
   <div v-else-if="showNoResults" class="text-center py-10 text-gray-500">
-    <p v-if="!hasSearched">
-      No favorite Pokemon yet. Search for Pokemon and add them to your
-      favorites!
-    </p>
-    <p v-else>No Pokemon found. Please try a different search term.</p>
+    <!-- Favorites Page No Results -->
+    <template v-if="isFavoritesPage">
+      <h2 class="text-4xl text-poke-black font-bold mb-4">No Favorites Yet!</h2>
+      <p class="text-lg">You haven't added any Pokemon to your favorites.</p>
+      <p class="text-sm text-gray-400 mt-2">
+        Start exploring and add some Pokemon to see them here!
+      </p>
+    </template>
+
+    <!-- Search No Results -->
+    <template v-else>
+      <h2 class="text-4xl text-poke-black font-bold mb-4">Uh-Oh!</h2>
+      <p class="text-lg">You look lost on your journey!</p>
+      <PrimaryButton @click="handleSearchAgain" class="mx-auto mt-3">
+        <template #text> Go Back Home </template>
+      </PrimaryButton>
+    </template>
   </div>
 
   <!-- Virtual Scrolling Pokemon Grid -->
-  <div v-else-if="displayedPokemon.length > 0" class="flex flex-col h-full relative">
+  <div
+    v-else-if="displayedPokemon.length > 0"
+    class="flex flex-col h-full relative"
+  >
     <div class="relative overflow-hidden flex-1">
       <RecycleScroller
         class="h-full min-h-0"
@@ -107,15 +121,22 @@ const handleShare = (pokemon) => {
         @scroll-end="handleScrollEnd"
       >
         <div class="p-2">
-          <PokemonSimpleCard :pokemon="item" @click="() => handlePokemonClick(item)" />
+          <PokemonSimpleCard
+            :pokemon="item"
+            @click="() => handlePokemonClick(item)"
+          />
         </div>
       </RecycleScroller>
-      
+
       <!-- Top gradient overlay -->
-      <div class="absolute top-0 left-0 right-0 h-5 bg-gradient-to-b from-poke-white to-transparent pointer-events-none z-10"></div>
-      
+      <div
+        class="absolute top-0 left-0 right-0 h-5 bg-gradient-to-b from-poke-white to-transparent pointer-events-none z-10"
+      ></div>
+
       <!-- Bottom gradient overlay -->
-      <div class="absolute bottom-0 left-0 right-0 h-5 bg-gradient-to-t from-poke-white to-transparent pointer-events-none z-10"></div>
+      <div
+        class="absolute bottom-0 left-0 right-0 h-5 bg-gradient-to-t from-poke-white to-transparent pointer-events-none z-10"
+      ></div>
     </div>
 
     <!-- Loading more indicator -->
@@ -128,12 +149,9 @@ const handleShare = (pokemon) => {
   </div>
 
   <!-- Pokemon Detail Modal -->
-  <PokemonDetailModal 
+  <PokemonDetailModal
     :is-open="isModalOpen"
     :pokemon="selectedPokemon"
     @close="closeModal"
-    @add-to-favorites="handleAddToFavorites"
-    @share="handleShare"
   />
 </template>
-
