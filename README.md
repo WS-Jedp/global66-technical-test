@@ -18,7 +18,6 @@ Puedes ver la aplicación desplegada en GitHub Pages aquí:
 | **Pinia**                   | Gestión simple y efectiva del estado global (favoritos), más ligero que Vuex       |
 | **Vue Virtual Scroller**    | Mejora el rendimiento al renderizar solo los elementos visibles en pantalla        |
 | **TailwindCSS**             | Utilidad de estilos rápida, altamente flexible y lista para escalar                |
-| **GSAP**                    | Para animaciones fluidas y controladas en componentes clave del UI                 |
 | **Vitest**                  | Framework moderno y rápido para pruebas unitarias                                  |
 
 ---

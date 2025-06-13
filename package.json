@@ -17,7 +17,6 @@
     "@tailwindcss/vite": "^4.1.10",
     "@tanstack/vue-query": "^5.80.7",
     "@vueuse/core": "^13.3.0",
-    "gsap": "^3.13.0",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.3.0",
     "tailwindcss": "^4.1.10",
