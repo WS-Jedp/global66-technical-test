@@ -3,6 +3,7 @@ import { RecycleScroller } from "vue-virtual-scroller";
 import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
 import { ref } from "vue";
 import PokemonSimpleCard from "../../components/pokemons/PokemonSimpleCard.vue";
+import PokemonDetailModal from "../modals/pokemon/PokemonDetailModal.vue";
 
 defineProps({
   displayedPokemon: {
@@ -25,10 +26,6 @@ defineProps({
     type: Boolean,
     default: false,
   },
-  useVirtualScrolling: {
-    type: Boolean,
-    default: false,
-  },
   hasNextPage: {
     type: Boolean,
     default: false,
@@ -42,6 +39,8 @@ defineProps({
 const emit = defineEmits(["load-more"]);
 
 const isLoadingMore = ref(false);
+const isModalOpen = ref(false);
+const selectedPokemon = ref(null);
 
 const handleScrollEnd = async () => {
   if (isLoadingMore.value) return;
@@ -53,6 +52,26 @@ const handleScrollEnd = async () => {
   setTimeout(() => {
     isLoadingMore.value = false;
   }, 1000);
+};
+
+const handlePokemonClick = (pokemon) => {
+  selectedPokemon.value = pokemon;
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+  selectedPokemon.value = null;
+};
+
+const handleAddToFavorites = (pokemon) => {
+  // Handle add to favorites logic here
+  console.log('Add to favorites:', pokemon);
+};
+
+const handleShare = (pokemon) => {
+  // Handle share logic here
+  console.log('Share pokemon:', pokemon);
 };
 </script>
 
@@ -88,7 +107,7 @@ const handleScrollEnd = async () => {
         @scroll-end="handleScrollEnd"
       >
         <div class="p-2">
-          <PokemonSimpleCard :pokemon="item" />
+          <PokemonSimpleCard :pokemon="item" @click="() => handlePokemonClick(item)" />
         </div>
       </RecycleScroller>
       
@@ -107,5 +126,14 @@ const handleScrollEnd = async () => {
       Loading more Pokemon...
     </div>
   </div>
+
+  <!-- Pokemon Detail Modal -->
+  <PokemonDetailModal 
+    :is-open="isModalOpen"
+    :pokemon="selectedPokemon"
+    @close="closeModal"
+    @add-to-favorites="handleAddToFavorites"
+    @share="handleShare"
+  />
 </template>
 

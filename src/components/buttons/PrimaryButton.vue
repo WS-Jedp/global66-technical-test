@@ -17,11 +17,13 @@ import { computed } from 'vue'
 interface Props {
   disabled?: boolean
   variant?: 'primary' | 'secondary'
+  full?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   disabled: false,
-  variant: 'primary'
+  variant: 'primary',
+  full: false
 })
 
 const emit = defineEmits<{
@@ -30,8 +32,8 @@ const emit = defineEmits<{
 
 const buttonClasses = computed(() => {
   const baseClasses = [
-    'min-w-[150px]',
-    'h-10',
+    props.full ? 'w-full' : 'min-w-[150px]',
+    'h-12',
     'text-white',
     'flex',
     'items-center',
@@ -42,7 +44,8 @@ const buttonClasses = computed(() => {
     'transition-colors',
     'duration-200',
     'disabled:opacity-50',
-    'disabled:cursor-not-allowed'
+    'disabled:cursor-not-allowed',
+    'px-6'
   ]
 
   const variantClasses = {

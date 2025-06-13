@@ -4,14 +4,14 @@ import PrimaryButton from "../components/buttons/PrimaryButton.vue";
 
 const router = useRouter();
 const navigateToHome = () => {
-  router.push({ name: "home" });
+  router.push({ name: "Home" });
 };
 </script>
 
 <template>
   <section class="relative w-full h-screen flex justify-center">
     <div
-      class="relative flex flex-col w-full h-[80%] my-auto items-center justify-around text-black"
+      class="relative flex flex-col w-full px-6 h-[80%] my-auto items-center justify-around text-black"
     >
       <figure class="relative flex items-center justify-center">
         <div
@@ -24,7 +24,7 @@ const navigateToHome = () => {
         />
       </figure>
       <h1 class="text-2xl font-bold mb-4">Welcome to the Pokédex</h1>
-      <p class="text-md text-poke-text-black max-w-xl text-center">
+      <p class="text-md text-poke-black text-center max-w-sm">
         The digital encyclopedia created by Professor Oak is an invaluable tool
         to Trainers in the Pokémon world.
       </p>

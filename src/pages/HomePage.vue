@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import TextInput from "../forms/inputs/TextInput.vue";
 import ScreenLoader from "../containers/loaders/ScreenLoader.vue";
 import PokemonListContainer from "../containers/pokemonsList/PokemonListContainer.vue";
@@ -10,6 +11,7 @@ import TabNavigation from "../components/navigation/TabNavigation.vue";
 
 // Reactive state
 const searchQuery = ref("");
+const route = useRoute();
 
 // Initial Pokemon loading for the first batch
 const { isInitialLoading, initialLoadError } = useInitialPokemon();
@@ -34,6 +36,14 @@ const handleLoadMore = () => {
     loadMore();
   }
 };
+
+// Handle Pokemon query parameter
+onMounted(() => {
+  const pokemonParam = route.query.pokemon;
+  if (pokemonParam && typeof pokemonParam === 'string') {
+    searchQuery.value = pokemonParam;
+  }
+});
 </script>
 
 <template>

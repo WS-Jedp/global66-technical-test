@@ -11,9 +11,12 @@ interface PokemonListResponse {
 }
 
 interface SimplePokemon {
+  id: number
   name: string
   sprite: string
-  id: number
+  weight: number
+  height: number
+  types: string[]
 }
 
 export class PokemonService {
@@ -131,9 +134,12 @@ export class PokemonService {
    */
   private transformPokemonData(pokemon: Pokemon): SimplePokemon {
     return {
+      id: pokemon.id,
       name: pokemon.name,
-      sprite: pokemon.sprites.front_default || 'https://via.placeholder.com/96?text=No+Image',
-      id: pokemon.id
+      sprite: pokemon.sprites.other['official-artwork'].front_default ||  pokemon.sprites.front_default || 'https://via.placeholder.com/96?text=No+Image',
+      weight: pokemon.weight,
+      height: pokemon.height,
+      types: pokemon.types.map(type => type.type.name)
     }
   }
 
