@@ -1,11 +1,11 @@
 <script setup>
 import { ref, toRef } from "vue";
-import TextInput from "../forms/inputs/TextInput.vue";
 import ScreenLoader from "../containers/loaders/ScreenLoader.vue";
 import PokemonListContainer from "../containers/pokemonsList/PokemonListContainer.vue";
 import { useFavoritesPage } from "../composables/useFavoritesPage";
 import TabNavigation from "../components/navigation/TabNavigation.vue";
 import { useSearchStore } from "../store/useSearchStore";
+import TextInput from "../components/forms/inputs/TextInput.vue";
 
 // Search store
 const searchStore = useSearchStore();
