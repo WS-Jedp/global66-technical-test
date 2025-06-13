@@ -1,5 +1,6 @@
 {
   "name": "global66-technical-test",
+  "homepage": "https://github.com/WS-Jedp/global66-technical-test",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.10",
@@ -30,6 +32,7 @@
     "@vitest/ui": "^3.2.3",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.7.0",
+    "gh-pages": "^6.3.0",
     "happy-dom": "^18.0.1",
     "jsdom": "^26.1.0",
     "typescript": "~5.8.3",
