@@ -1,8 +1,9 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from "vue";
 import PrimaryButton from "../../../components/buttons/PrimaryButton.vue";
 import ModalContainer from "../../../components/modals/ModalContainer.vue";
-import { useFavoritesStore } from '../../../store/favorites';
+import SimpleToast from "../../../components/toast/SimpleToast.vue";
+import { useFavoritesStore } from "../../../store/favorites";
 
 const props = defineProps({
   isOpen: {
@@ -25,16 +26,35 @@ const addToFavorites = () => {
   emit("add-to-favorites", props.pokemon);
 };
 
-const shareWithFriends = () => {
+const showToast = ref(false);
+const toastMessage = ref("");
+
+const shareWithFriends = async () => {
   if (props.pokemon) {
-    const host = window.location.origin;
-    const pokemonParam = encodeURIComponent(props.pokemon.name);
-    const shareUrl = `${host}/home?pokemon=${pokemonParam}`;
-    const message = `Check out this awesome Pokemon: ${props.pokemon.name}! ${shareUrl}`;
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-    
-    window.open(whatsappUrl, '_blank');
+    const pokemonData = `Name: ${props.pokemon.name}, Weight: ${props.pokemon.weight}, Height: ${props.pokemon.height}, Types: ${props.pokemon.types.join(', ')}`;
+
+    try {
+      await navigator.clipboard.writeText(pokemonData);
+      showSuccessToast("Pokemon data copied to clipboard!");
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea");
+      textArea.value = pokemonData;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      showSuccessToast("Pokemon data copied to clipboard!");
+    }
   }
+};
+
+const showSuccessToast = (message) => {
+  toastMessage.value = message;
+  showToast.value = true;
+  setTimeout(() => {
+    showToast.value = false;
+  }, 3000);
 };
 
 const favoritesStore = useFavoritesStore();
@@ -117,21 +137,28 @@ const toggleFavorite = () => {
         </ul>
 
         <!-- Action Buttons -->
-        <div class="flex flex-row flex-nowrap items-center justify-between mt-3">
+        <div
+          class="flex flex-row flex-nowrap items-center justify-between mt-3"
+        >
           <PrimaryButton @click="shareWithFriends" variant="primary">
-            <template #text>
-            Share To My Friends
-            </template>
+            <template #text> Share To My Friends </template>
           </PrimaryButton>
           <button @click="toggleFavorite">
-            <img 
-              :src="isFavorite ? '/assets/icons/pokemon-fav-active.svg' : '/assets/icons/pokemon-fav-disabled.svg'" 
-              alt="Favorite Icon" 
-              class="w-12" 
+            <img
+              :src="
+                isFavorite
+                  ? '/assets/icons/pokemon-fav-active.svg'
+                  : '/assets/icons/pokemon-fav-disabled.svg'
+              "
+              alt="Favorite Icon"
+              class="w-12"
             />
           </button>
         </div>
       </div>
     </div>
   </ModalContainer>
+
+  <!-- Toast Notification -->
+  <SimpleToast :is-visible="showToast" :message="toastMessage" />
 </template>
