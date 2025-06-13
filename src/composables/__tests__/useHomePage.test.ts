@@ -77,7 +77,7 @@ describe('useHomePage', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
 
     expect(pokemonService.getPokemonPaginated).toHaveBeenCalledWith(1, 10)
-    expect(wrapper.vm.displayedPokemon).toEqual(mockPokemonData.pokemon)
+    expect((wrapper.vm as any).displayedPokemon).toEqual(mockPokemonData.pokemon)
   })
 
   it('searches pokemon when search query is provided', async () => {
@@ -104,14 +104,14 @@ describe('useHomePage', () => {
     })
 
     // Set search query
-    wrapper.vm.searchQuery = 'pikachu'
+    ;(wrapper.vm as any).searchQuery = 'pikachu'
     await wrapper.vm.$nextTick()
 
     // Wait for debounce and query
     await new Promise(resolve => setTimeout(resolve, 350))
 
-    expect(wrapper.vm.hasSearched).toBe(true)
-    expect(wrapper.vm.displayedPokemon).toEqual(searchResults)
+    expect((wrapper.vm as any).hasSearched).toBe(true)
+    expect((wrapper.vm as any).displayedPokemon).toEqual(searchResults)
   })
 
   it('debounces search query changes', async () => {
@@ -127,13 +127,13 @@ describe('useHomePage', () => {
     })
 
     // Rapidly change search query
-    wrapper.vm.searchQuery = 'p'
+    ;(wrapper.vm as any).searchQuery = 'p'
     await wrapper.vm.$nextTick()
-    wrapper.vm.searchQuery = 'pi'
+    ;(wrapper.vm as any).searchQuery = 'pi'
     await wrapper.vm.$nextTick()
-    wrapper.vm.searchQuery = 'pik'
+    ;(wrapper.vm as any).searchQuery = 'pik'
     await wrapper.vm.$nextTick()
-    wrapper.vm.searchQuery = 'pika'
+    ;(wrapper.vm as any).searchQuery = 'pika'
     await wrapper.vm.$nextTick()
 
     // Wait less than debounce time
@@ -158,14 +158,14 @@ describe('useHomePage', () => {
       }
     })
 
-    wrapper.vm.searchQuery = 'nonexistent'
+    ;(wrapper.vm as any).searchQuery = 'nonexistent'
     await wrapper.vm.$nextTick()
 
     // Wait for debounce and query
     await new Promise(resolve => setTimeout(resolve, 350))
 
-    expect(wrapper.vm.showNoResults).toBe(true)
-    expect(wrapper.vm.displayedPokemon).toEqual([])
+    expect((wrapper.vm as any).showNoResults).toBe(true)
+    expect((wrapper.vm as any).displayedPokemon).toEqual([])
   })
 
   it('returns to paginated results when search query is cleared', async () => {
@@ -185,19 +185,19 @@ describe('useHomePage', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
 
     // Set search query
-    wrapper.vm.searchQuery = 'pikachu'
+    ;(wrapper.vm as any).searchQuery = 'pikachu'
     await wrapper.vm.$nextTick()
     await new Promise(resolve => setTimeout(resolve, 350))
 
-    expect(wrapper.vm.hasSearched).toBe(true)
+    expect((wrapper.vm as any).hasSearched).toBe(true)
 
     // Clear search query
-    wrapper.vm.searchQuery = ''
+    ;(wrapper.vm as any).searchQuery = ''
     await wrapper.vm.$nextTick()
     await new Promise(resolve => setTimeout(resolve, 350))
 
-    expect(wrapper.vm.hasSearched).toBe(false)
-    expect(wrapper.vm.displayedPokemon).toEqual(mockPokemonData.pokemon)
+    expect((wrapper.vm as any).hasSearched).toBe(false)
+    expect((wrapper.vm as any).displayedPokemon).toEqual(mockPokemonData.pokemon)
   })
 
   it('handles pagination correctly', async () => {
@@ -233,17 +233,17 @@ describe('useHomePage', () => {
     // Wait for initial load
     await new Promise(resolve => setTimeout(resolve, 0))
 
-    expect(wrapper.vm.hasNextPage).toBe(true)
+    expect((wrapper.vm as any).hasNextPage).toBe(true)
 
     // Load more
-    await wrapper.vm.loadMore()
+    await (wrapper.vm as any).loadMore()
     await new Promise(resolve => setTimeout(resolve, 0))
 
     expect(pokemonService.getPokemonPaginated).toHaveBeenCalledTimes(2)
     expect(pokemonService.getPokemonPaginated).toHaveBeenNthCalledWith(2, 2, 10)
     
     // Should have both pages of data
-    expect(wrapper.vm.displayedPokemon).toHaveLength(2)
-    expect(wrapper.vm.hasNextPage).toBe(false)
+    expect((wrapper.vm as any).displayedPokemon).toHaveLength(2)
+    expect((wrapper.vm as any).hasNextPage).toBe(false)
   })
 })

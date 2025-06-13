@@ -85,7 +85,7 @@ describe('useFavoritesPage', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
 
     expect(pokemonService.getFavoritePokemon).toHaveBeenCalledWith(['pikachu', 'charizard'])
-    expect(wrapper.vm.displayedPokemon).toEqual(mockFavoritePokemon)
+    expect((wrapper.vm as any).displayedPokemon).toEqual(mockFavoritePokemon)
   })
 
   it('does not load pokemon when no favorites exist', async () => {
@@ -102,7 +102,7 @@ describe('useFavoritesPage', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
 
     expect(pokemonService.getFavoritePokemon).not.toHaveBeenCalled()
-    expect(wrapper.vm.showNoResults).toBe(true)
+    expect((wrapper.vm as any).showNoResults).toBe(true)
   })
 
   it('filters favorite pokemon based on search query', async () => {
@@ -125,15 +125,15 @@ describe('useFavoritesPage', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
 
     // Search for pikachu
-    wrapper.vm.searchQuery = 'pika'
+    ;(wrapper.vm as any).searchQuery = 'pika'
     await wrapper.vm.$nextTick()
 
     // Wait for debounce
     await new Promise(resolve => setTimeout(resolve, 350))
 
-    expect(wrapper.vm.hasSearched).toBe(true)
-    expect(wrapper.vm.displayedPokemon).toHaveLength(1)
-    expect(wrapper.vm.displayedPokemon[0].name).toBe('pikachu')
+    expect((wrapper.vm as any).hasSearched).toBe(true)
+    expect((wrapper.vm as any).displayedPokemon).toHaveLength(1)
+    expect((wrapper.vm as any).displayedPokemon[0].name).toBe('pikachu')
   })
 
   it('shows no results when search query matches no favorites', async () => {
@@ -156,15 +156,15 @@ describe('useFavoritesPage', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
 
     // Search for something that doesn't exist
-    wrapper.vm.searchQuery = 'nonexistent'
+    ;(wrapper.vm as any).searchQuery = 'nonexistent'
     await wrapper.vm.$nextTick()
 
     // Wait for debounce
     await new Promise(resolve => setTimeout(resolve, 350))
 
-    expect(wrapper.vm.hasSearched).toBe(true)
-    expect(wrapper.vm.showNoResults).toBe(true)
-    expect(wrapper.vm.displayedPokemon).toHaveLength(0)
+    expect((wrapper.vm as any).hasSearched).toBe(true)
+    expect((wrapper.vm as any).showNoResults).toBe(true)
+    expect((wrapper.vm as any).displayedPokemon).toHaveLength(0)
   })
 
   it('debounces search query changes', async () => {
@@ -186,22 +186,22 @@ describe('useFavoritesPage', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
 
     // Rapidly change search query
-    wrapper.vm.searchQuery = 'p'
+    ;(wrapper.vm as any).searchQuery = 'p'
     await wrapper.vm.$nextTick()
-    wrapper.vm.searchQuery = 'pi'
+    ;(wrapper.vm as any).searchQuery = 'pi'
     await wrapper.vm.$nextTick()
-    wrapper.vm.searchQuery = 'pik'
+    ;(wrapper.vm as any).searchQuery = 'pik'
     await wrapper.vm.$nextTick()
-    wrapper.vm.searchQuery = 'pika'
+    ;(wrapper.vm as any).searchQuery = 'pika'
     await wrapper.vm.$nextTick()
 
     // Wait less than debounce time
     await new Promise(resolve => setTimeout(resolve, 100))
-    expect(wrapper.vm.hasSearched).toBe(false)
+    expect((wrapper.vm as any).hasSearched).toBe(false)
 
     // Wait for debounce to complete
     await new Promise(resolve => setTimeout(resolve, 250))
-    expect(wrapper.vm.hasSearched).toBe(true)
+    expect((wrapper.vm as any).hasSearched).toBe(true)
   })
 
   it('returns all favorites when search query is cleared', async () => {
@@ -224,19 +224,19 @@ describe('useFavoritesPage', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
 
     // Set search query
-    wrapper.vm.searchQuery = 'pika'
+    ;(wrapper.vm as any).searchQuery = 'pika'
     await wrapper.vm.$nextTick()
     await new Promise(resolve => setTimeout(resolve, 350))
 
-    expect(wrapper.vm.displayedPokemon).toHaveLength(1)
+    expect((wrapper.vm as any).displayedPokemon).toHaveLength(1)
 
     // Clear search query
-    wrapper.vm.searchQuery = ''
+    ;(wrapper.vm as any).searchQuery = ''
     await wrapper.vm.$nextTick()
     await new Promise(resolve => setTimeout(resolve, 350))
 
-    expect(wrapper.vm.hasSearched).toBe(false)
-    expect(wrapper.vm.displayedPokemon).toHaveLength(2)
+    expect((wrapper.vm as any).hasSearched).toBe(false)
+    expect((wrapper.vm as any).displayedPokemon).toHaveLength(2)
   })
 
   it('handles case-insensitive search', async () => {
@@ -259,12 +259,12 @@ describe('useFavoritesPage', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
 
     // Search with uppercase
-    wrapper.vm.searchQuery = 'PIKA'
+    ;(wrapper.vm as any).searchQuery = 'PIKA'
     await wrapper.vm.$nextTick()
     await new Promise(resolve => setTimeout(resolve, 350))
 
-    expect(wrapper.vm.displayedPokemon).toHaveLength(1)
-    expect(wrapper.vm.displayedPokemon[0].name).toBe('pikachu')
+    expect((wrapper.vm as any).displayedPokemon).toHaveLength(1)
+    expect((wrapper.vm as any).displayedPokemon[0].name).toBe('pikachu')
   })
 
   it('reacts to changes in favorites store', async () => {
@@ -287,7 +287,7 @@ describe('useFavoritesPage', () => {
     await wrapper.vm.$nextTick()
     await new Promise(resolve => setTimeout(resolve, 0))
 
-    expect(wrapper.vm.displayedPokemon).toHaveLength(1)
+    expect((wrapper.vm as any).displayedPokemon).toHaveLength(1)
 
     // Add another favorite
     favoritesStore.add('charizard')
@@ -295,6 +295,6 @@ describe('useFavoritesPage', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
 
     expect(pokemonService.getFavoritePokemon).toHaveBeenCalledTimes(2)
-    expect(wrapper.vm.displayedPokemon).toHaveLength(2)
+    expect((wrapper.vm as any).displayedPokemon).toHaveLength(2)
   })
 })
