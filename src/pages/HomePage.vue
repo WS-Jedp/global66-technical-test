@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, toRef } from "vue";
 import TextInput from "../forms/inputs/TextInput.vue";
 import ScreenLoader from "../containers/loaders/ScreenLoader.vue";
 import PokemonListContainer from "../containers/pokemonsList/PokemonListContainer.vue";
@@ -7,8 +7,10 @@ import { useHomePokemon } from "../composables/useHomePokemon";
 import { usePokemonPagination } from "../composables/usePokemonPagination";
 import { useInitialPokemon } from "../composables/useInitialPokemon";
 import TabNavigation from "../components/navigation/TabNavigation.vue";
+import { useSearchStore } from "../store/useSearchStore";
 
-const searchQuery = ref("");
+// Search store
+const searchStore = useSearchStore();
 
 // Initial Pokemon loading for the first batch
 const { isInitialLoading, initialLoadError } = useInitialPokemon();
@@ -23,9 +25,10 @@ const {
   error: paginationError,
 } = usePokemonPagination(10);
 
-// Pokemon data with search integration
+// Pokemon data with search integration - use toRef to ensure reactivity
+const searchQueryRef = toRef(searchStore, 'searchQuery');
 const { displayedPokemon, isLoading, error, hasSearched, showNoResults } =
-  useHomePokemon(searchQuery, paginatedPokemon);
+  useHomePokemon(searchQueryRef, paginatedPokemon);
 
 // Load more handler
 const handleLoadMore = () => {
@@ -62,7 +65,7 @@ const handleLoadMore = () => {
   >
     <!-- Search Input -->
     <div class="w-full max-w-4xl mx-auto flex-shrink-0 p-4">
-      <TextInput v-model="searchQuery" placeholder="Search Pokemon..." />
+      <TextInput v-model="searchStore.searchQuery" placeholder="Search Pokemon..." />
     </div>
 
     <!-- Pokemon List - Takes remaining height -->
@@ -76,7 +79,7 @@ const handleLoadMore = () => {
         :has-next-page="hasNextPage"
         :is-fetching-next-page="isFetchingNextPage"
         @load-more="handleLoadMore"
-        @reset-search="searchQuery = ''"
+        @reset-search="searchStore.clearSearch()"
       />
     </div>
 

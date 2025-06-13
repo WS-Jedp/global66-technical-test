@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useSearchStore } from '../store/useSearchStore'
 
 const routes = [
   {
@@ -24,6 +25,18 @@ const router = createRouter({
   scrollBehavior() {
     return { top: 0 }
   },
+})
+
+// Navigation guard to clear search when switching between Home and Favorites
+router.beforeEach((to, from) => {
+  // Clear search when navigating between Home and Favorites pages
+  if (
+    (from.name === 'Home' && to.name === 'Favorites') ||
+    (from.name === 'Favorites' && to.name === 'Home')
+  ) {
+    const searchStore = useSearchStore()
+    searchStore.clearSearch()
+  }
 })
 
 export default router

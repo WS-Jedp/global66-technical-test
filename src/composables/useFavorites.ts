@@ -1,23 +1,23 @@
 import { useQuery } from '@tanstack/vue-query'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, type Ref } from 'vue'
 import { pokemonService } from '../services/pokemonService'
 import { useFavoritesStore } from '../store/favorites'
 
 /**
  * Hook for managing favorite Pokemon with search functionality
  */
-export function useFavorites(searchQuery: any) {
+export function useFavorites(searchQuery: Ref<string>) {
   const favoritesStore = useFavoritesStore()
   const debouncedQuery = ref('')
   let debounceTimeout: any = null
 
-  // Debounce the search query
+  // Debounce the search query - ensure reactivity
   watch(searchQuery, (newQuery: string) => {
     if (debounceTimeout) {
       clearTimeout(debounceTimeout)
     }
 
-    if (!newQuery.trim()) {
+    if (!newQuery || !newQuery.trim()) {
       debouncedQuery.value = ''
       return
     }
