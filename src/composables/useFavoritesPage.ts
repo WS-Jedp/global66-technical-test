@@ -4,9 +4,10 @@ import { pokemonService } from '../services/pokemonService'
 import { useFavoritesStore } from '../store/favorites'
 
 /**
- * Hook for managing favorite Pokemon with search functionality
+ * Composable for FavoritesPage Pokemon management
+ * Handles favorite Pokemon fetching and search functionality
  */
-export function useFavorites(searchQuery: Ref<string>) {
+export function useFavoritesPage(searchQuery: Ref<string>) {
   const favoritesStore = useFavoritesStore()
   const debouncedQuery = ref('')
   let debounceTimeout: any = null

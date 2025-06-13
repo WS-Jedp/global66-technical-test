@@ -23,7 +23,7 @@ const emit = defineEmits(["navigate-home", "navigate-favorites"]);
   <article
     class="w-full bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] px-5 py-3 "
   >
-    <div class="flex items-center justify-center space-x-2 max-w-4xl mx-auto px-3">
+    <div class="flex items-center justify-center space-x-2 max-w-4xl mx-auto md:px-3">
       <PrimaryButton
         @click="navigateToHome"
         :variant="isOnFavorites ? 'secondary' : 'primary'"

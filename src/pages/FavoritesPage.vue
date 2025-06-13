@@ -3,7 +3,7 @@ import { ref, toRef } from "vue";
 import TextInput from "../forms/inputs/TextInput.vue";
 import ScreenLoader from "../containers/loaders/ScreenLoader.vue";
 import PokemonListContainer from "../containers/pokemonsList/PokemonListContainer.vue";
-import { useFavorites } from "../composables/useFavorites";
+import { useFavoritesPage } from "../composables/useFavoritesPage";
 import TabNavigation from "../components/navigation/TabNavigation.vue";
 import { useSearchStore } from "../store/useSearchStore";
 
@@ -13,7 +13,7 @@ const searchStore = useSearchStore();
 // Favorites data with search integration - use toRef to ensure reactivity
 const searchQueryRef = toRef(searchStore, 'searchQuery');
 const { displayedPokemon, isLoading, error, hasSearched, showNoResults } =
-  useFavorites(searchQueryRef);
+  useFavoritesPage(searchQueryRef);
 </script>
 
 <template>

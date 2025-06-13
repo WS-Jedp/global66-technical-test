@@ -1,40 +1,41 @@
 <script setup>
-import { ref, computed, onMounted, toRef } from "vue";
+import { toRef } from "vue";
 import TextInput from "../forms/inputs/TextInput.vue";
 import ScreenLoader from "../containers/loaders/ScreenLoader.vue";
 import PokemonListContainer from "../containers/pokemonsList/PokemonListContainer.vue";
-import { useHomePokemon } from "../composables/useHomePokemon";
-import { usePokemonPagination } from "../composables/usePokemonPagination";
-import { useInitialPokemon } from "../composables/useInitialPokemon";
+import { useHomePage } from "../composables/useHomePage";
 import TabNavigation from "../components/navigation/TabNavigation.vue";
 import { useSearchStore } from "../store/useSearchStore";
 
 // Search store
 const searchStore = useSearchStore();
 
-// Initial Pokemon loading for the first batch
-const { isInitialLoading, initialLoadError } = useInitialPokemon();
-
-// Pagination for all Pokemon (when no search)
-const {
-  allPokemon: paginatedPokemon,
-  loadMore,
-  hasNextPage,
-  isFetchingNextPage,
-  isLoading: isPaginationLoading,
-  error: paginationError,
-} = usePokemonPagination(10);
-
 // Pokemon data with search integration - use toRef to ensure reactivity
 const searchQueryRef = toRef(searchStore, 'searchQuery');
-const { displayedPokemon, isLoading, error, hasSearched, showNoResults } =
-  useHomePokemon(searchQueryRef, paginatedPokemon);
+const {
+  displayedPokemon,
+  isInitialLoading,
+  isLoading,
+  isPaginationLoading,
+  initialLoadError,
+  error,
+  hasSearched,
+  showNoResults,
+  hasNextPage,
+  isFetchingNextPage,
+  loadMore
+} = useHomePage(searchQueryRef, 10);
 
 // Load more handler
 const handleLoadMore = () => {
   if (!hasSearched.value) {
     loadMore();
   }
+};
+
+// Refresh page handler
+const handleRefreshPage = () => {
+  window.location.reload();
 };
 </script>
 
@@ -50,7 +51,7 @@ const handleLoadMore = () => {
     <div class="text-center py-10 text-red-500">
       <p>Failed to load Pokemon data. Please refresh the page.</p>
       <button
-        @click="window.location.reload()"
+        @click="handleRefreshPage"
         class="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
       >
         Refresh Page
@@ -73,7 +74,7 @@ const handleLoadMore = () => {
       <PokemonListContainer
         :displayed-pokemon="displayedPokemon"
         :is-loading="isLoading || isPaginationLoading"
-        :error="error || paginationError"
+        :error="error"
         :show-no-results="showNoResults"
         :has-searched="hasSearched"
         :has-next-page="hasNextPage"
