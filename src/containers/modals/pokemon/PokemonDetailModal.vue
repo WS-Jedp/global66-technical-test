@@ -106,7 +106,7 @@ const toggleFavorite = () => {
             class="text-lg flex flex-row flex-nowrap items-center w-full py-1 border-b border-poke-light-gray"
           >
             <p class="text-poke-black font-semibold mr-1">Name:</p>
-            <p class="font-medium text-poke-black-200">{{ pokemon.name }}</p>
+            <p class="font-medium text-poke-black-200 capitalize">{{ pokemon.name }}</p>
           </li>
 
           <!-- Weight -->
